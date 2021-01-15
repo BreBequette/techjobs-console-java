@@ -7,9 +7,8 @@ import org.apache.commons.csv.CSVRecord;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.lang.reflect.Array;
+import java.util.*;
 
 /**
  * Created by LaunchCode
@@ -43,6 +42,7 @@ public class JobData {
             }
         }
 
+        Collections.sort(values);
         return values;
     }
 
@@ -74,15 +74,41 @@ public class JobData {
 
         for (HashMap<String, String> row : allJobs) {
 
-            String aValue = row.get(column);
+            String aValue = row.get(column).toLowerCase();
 
-            if (aValue.contains(value)) {
+            if (aValue.contains(value.toLowerCase())) {
                 jobs.add(row);
             }
         }
 
         return jobs;
     }
+
+    public static ArrayList<HashMap<String, String>> findByValue(String searchTerm){
+        // load data, if not already loaded
+        loadData();
+
+        ArrayList<HashMap<String, String>> jobs = new ArrayList<>();
+
+        //loop through each job in the database
+        for (HashMap<String, String> job : allJobs){
+            //get a collection of all of the values
+            Collection<String> values = job.values();
+
+            //loop through the values to look for search term
+            for (String value : values ){
+                //if the value contains search term, add it to the jobs arraylist
+                if (value.toLowerCase().contains(searchTerm.toLowerCase())){
+                    //check to see if arraylist already contains the job
+                    if(!jobs.contains(job)){
+                        jobs.add(job);
+                    }//end nested if statement
+                }//end if statement
+            }//end nested for loop
+        }//end for loop
+
+        return jobs;
+    }//end findByValue method
 
     /**
      * Read in data from a CSV file and store it in a list
